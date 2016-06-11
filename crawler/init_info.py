@@ -1,5 +1,4 @@
 import os
-import re
 import util
 
 AUTHOR_URL = 'http://dblp.uni-trier.de/pers?pos='
@@ -16,7 +15,7 @@ def get_journals():
     util.mkdir(JOURNAL_FOLDER)
     while True:
         html = util.get_page(JOURNAL_URL + str(pos))
-        links = re.findall('<a href="http://dblp.uni-trier.de/db/journals/(.*?)">(.*?)</a>', html)
+        links = util.find_journals(html)
         once_cnt = 0
         for link in links:
             if link[0] == '' or '?' in link[0]:
@@ -35,12 +34,12 @@ def get_journals():
         print 'Journal', cnt
 
 
-def get_conference():
+def get_conferences():
     pos, cnt = 1, 0
     util.mkdir(CONFERENCE_FOLDER)
     while True:
         html = util.get_page(CONFERENCE_URL + str(pos))
-        links = re.findall('<a href="http://dblp.uni-trier.de/db/conf/(.*?)">(.*?)</a>', html)
+        links = util.find_conferences(html)
         once_cnt = 0
         for link in links:
             if link[0] == '' or '?' in link[0]:
@@ -59,12 +58,12 @@ def get_conference():
         print 'Conference', cnt
 
 
-def get_author():
+def get_authors():
     pos, cnt = 1, 0
     util.mkdir(AUTHOR_FOLDER)
     while True:
         html = util.get_page(AUTHOR_URL + str(pos))
-        links = re.findall('<a href="http://dblp.uni-trier.de/pers/hd/a/(.*?)">(.*?)</a>', html)
+        links = util.find_authors(html)
         once_cnt = 0
         for link in links:
             if link[0] == '' or '?' in link[0]:
@@ -80,10 +79,10 @@ def get_author():
         if once_cnt == 0:
         	break
         pos += 300
-        print 'Author', cnt
+        print 'Author', pos, cnt
 
 
 if __name__ == '__main__':
     get_journals()
-    get_conference()
-    get_author()
+    get_conferences()
+    get_authors()

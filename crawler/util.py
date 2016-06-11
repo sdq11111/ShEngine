@@ -1,4 +1,5 @@
 import os
+import re
 import md5
 import json
 import time
@@ -15,7 +16,7 @@ def get_page(url):
     while True:
         try:
             time.sleep(retry_int)
-            r = requests.get(url)
+            r = requests.get(url, timeout=5)
             return r.text.replace('\n', '').replace('\r', '')
         except:
             retry_int += 0.1
@@ -42,6 +43,23 @@ def mkdir(path):
     path = os.path.join(CRAWLED_FOLDER, path)
     if not os.path.exists(path):
         os.makedirs(path)
+
+
+def listdir(path):
+    path = os.path.join(CRAWLED_FOLDER, path)
+    return os.listdir(path)
+
+
+def find_journals(html):
+    return re.findall('<a href="http://dblp.uni-trier.de/db/journals/(.*?)".*?>(.*?)</a>', html)
+
+
+def find_conferences(html):
+    return re.findall('<a href="http://dblp.uni-trier.de/db/conf/(.*?)".*?>(.*?)</a>', html)
+
+
+def find_authors(html):
+    return re.findall('<a href="http://dblp.uni-trier.de/pers/hd/(.*?)".*?>(.*?)</a>', html)
 
 
 def hex_hash(name):
