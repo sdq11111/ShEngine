@@ -12,12 +12,25 @@ if not os.path.exists(CRAWLED_FOLDER):
 
 
 def get_page(url):
+    if url[-1] == '/':
+        url = url[:-1]
+    parts = url.split('://')[1].split('/')
+    folder = CRAWLED_FOLDER + '/html/' + '/'.join(parts[:-1])
+    path = folder + '/' + parts[-1] + '.html'
+    if os.path.exists(path):
+        with open(path) as reader:
+            return reader.read()
+    if not os.path.exists(folder):
+        os.makedirs(folder)
     retry_int = 0.1
     while True:
         try:
             time.sleep(retry_int)
             r = requests.get(url, timeout=5)
-            return r.text.replace('\n', '').replace('\r', '')
+            html = r.text.replace('\n', '').replace('\r', '')
+            with open(path, 'w') as writer:
+                writer.write(html)
+            return html
         except:
             retry_int += 0.1
 

@@ -1,4 +1,5 @@
 import os
+import re
 import util
 
 JOURNAL_FOLDER = os.path.join('basic', 'journal')
@@ -8,7 +9,6 @@ AUTHOR_FOLDER = os.path.join('basic', 'author')
 JOURNAL_CRALWED_FOLDER = os.path.join('link', 'journal')
 CONFERENCE_CRALWED_FOLDER = os.path.join('link', 'conference')
 AUTHOR_CRALWED_FOLDER = os.path.join('link', 'author')
-
 
 def get_links(prefix, html):
 	journals = util.find_journals(html)
@@ -37,6 +37,11 @@ def get_links(prefix, html):
 	return links
 
 
+def get_full_name(html):
+	links = re.findall('<header class="headline noline"><h1>(.*?)</', html)
+	return links[0]
+
+
 def get_journals():
 	files = util.listdir(JOURNAL_FOLDER)
 	util.mkdir(JOURNAL_CRALWED_FOLDER)
@@ -46,7 +51,9 @@ def get_journals():
 			continue
 		data = util.load_json(os.path.join(JOURNAL_FOLDER, file_name))
 		html = util.get_page(data['url'])
-		print data['short']
+		full_name = get_full_name(html)
+		data['name'] = full_name
+		print data['short'], full_name
 		data['links'] = get_links(data['short'], html)
 		util.save_json(save_path, data)
 
@@ -60,7 +67,9 @@ def get_conferences():
 			continue
 		data = util.load_json(os.path.join(CONFERENCE_FOLDER, file_name))
 		html = util.get_page(data['url'])
-		print data['short']
+		full_name = get_full_name(html)
+		data['name'] = full_name
+		print data['short'], full_name
 		data['links'] = get_links(data['short'], html)
 		util.save_json(save_path, data)
 
@@ -74,7 +83,9 @@ def get_authors():
 			continue
 		data = util.load_json(os.path.join(AUTHOR_FOLDER, file_name))
 		html = util.get_page(data['url'])
-		print data['short']
+		full_name = get_full_name(html)
+		data['name'] = full_name
+		print data['short'], full_name
 		data['links'] = get_links(data['short'], html)
 		util.save_json(save_path, data)
 
