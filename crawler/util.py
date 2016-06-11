@@ -1,4 +1,5 @@
 import os
+import md5
 import json
 import time
 import requests
@@ -39,7 +40,14 @@ def exists(path):
 
 def mkdir(path):
     path = os.path.join(CRAWLED_FOLDER, path)
-    os.makedirs(path)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+def hex_hash(name):
+    m = md5.new()
+    m.update(name)
+    return m.hexdigest()
 
 
 if __name__ == '__main__':
