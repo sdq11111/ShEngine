@@ -59,7 +59,7 @@ def get_conferences():
 
 
 def get_authors():
-    pos, cnt = 1, 0
+    pos, cnt = 545504, 0
     util.mkdir(AUTHOR_FOLDER)
     while True:
         html = util.get_page(AUTHOR_URL + str(pos))
@@ -85,4 +85,4 @@ def get_authors():
 if __name__ == '__main__':
     get_journals()
     get_conferences()
-    get_authors()
+    #get_authors()

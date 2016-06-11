@@ -1,6 +1,7 @@
 import os
 import re
 import util
+from HTMLParser import HTMLParser
 
 JOURNAL_FOLDER = os.path.join('basic', 'journal')
 CONFERENCE_FOLDER = os.path.join('basic', 'conference')
@@ -39,12 +40,13 @@ def get_links(prefix, html):
 
 def get_full_name(html):
 	links = re.findall('<header class="headline noline"><h1>(.*?)</', html)
-	return links[0]
+	return HTMLParser().unescape(links[0])
 
 
 def get_journals():
 	files = util.listdir(JOURNAL_FOLDER)
 	util.mkdir(JOURNAL_CRALWED_FOLDER)
+	cnt = 0
 	for file_name in files:
 		save_path = os.path.join(JOURNAL_CRALWED_FOLDER, file_name)
 		if util.exists(save_path):
@@ -53,14 +55,16 @@ def get_journals():
 		html = util.get_page(data['url'])
 		full_name = get_full_name(html)
 		data['name'] = full_name
-		print data['short'], full_name
+		cnt += 1
+		print cnt, len(files), data['short'], '|', full_name
 		data['links'] = get_links(data['short'], html)
-		util.save_json(save_path, data)
+		#util.save_json(save_path, data)
 
 
 def get_conferences():
 	files = util.listdir(CONFERENCE_FOLDER)
 	util.mkdir(CONFERENCE_CRALWED_FOLDER)
+	cnt = 0
 	for file_name in files:
 		save_path = os.path.join(CONFERENCE_CRALWED_FOLDER, file_name)
 		if util.exists(save_path):
@@ -69,9 +73,10 @@ def get_conferences():
 		html = util.get_page(data['url'])
 		full_name = get_full_name(html)
 		data['name'] = full_name
-		print data['short'], full_name
+		cnt += 1
+		print cnt, len(files), data['short'], '|', full_name
 		data['links'] = get_links(data['short'], html)
-		util.save_json(save_path, data)
+		#util.save_json(save_path, data)
 
 
 def get_authors():
@@ -93,4 +98,4 @@ def get_authors():
 if __name__ == '__main__':
     get_journals()
     get_conferences()
-    get_authors()
+    #get_authors()

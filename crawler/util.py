@@ -16,23 +16,26 @@ def get_page(url):
         url = url[:-1]
     parts = url.split('://')[1].split('/')
     folder = CRAWLED_FOLDER + '/html/' + '/'.join(parts[:-1])
-    path = folder + '/' + parts[-1] + '.html'
+    path = folder + '/' + parts[-1]
+    if not path.endswith('.html'):
+        path += '.html'
     if os.path.exists(path):
         with open(path) as reader:
             return reader.read()
     if not os.path.exists(folder):
         os.makedirs(folder)
-    retry_int = 0.1
+    retry_int = 0.01
     while True:
         try:
             time.sleep(retry_int)
             r = requests.get(url, timeout=5)
             html = r.text.replace('\n', '').replace('\r', '')
-            with open(path, 'w') as writer:
-                writer.write(html)
+            if '?' not in path:
+                with open(path, 'w') as writer:
+                    writer.write(html)
             return html
         except:
-            retry_int += 0.1
+            retry_int += 0.05
 
 
 def save_json(path, value):
