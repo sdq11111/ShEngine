@@ -18,7 +18,9 @@ def get_page(url):
     folder = CRAWLED_FOLDER + '/html/' + '/'.join(parts[:-1])
     path = folder + '/' + parts[-1]
     if path.endswith('.html') and os.path.exists(path):
-        return ''
+        with open(path) as reader:
+            html = reader.read()
+        return html
     if not path.endswith('.html'):
         path += '.html'
     if os.path.exists(path):
