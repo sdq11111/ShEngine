@@ -21,7 +21,7 @@ def get_links(prefix, html):
 			print '\t', j[0]
 			inner_url = 'http://dblp.uni-trier.de/db/journals/' + j[0]
 			inner = util.get_page(inner_url)
-			links += get_links('###', inner)
+			#links += get_links('###', inner)
 		else:
 			links.append(('journal', j[0].split('/')[0].split('#')[0]))
 	for c in conferences:
@@ -29,11 +29,12 @@ def get_links(prefix, html):
 			print '\t', c[0]
 			inner_url = 'http://dblp.uni-trier.de/db/conf/' + c[0]
 			inner = util.get_page(inner_url)
-			links += get_links('###', inner)
+			#links += get_links('###', inner)
 		else:
 			links.append(('conference', c[0].split('/')[0].split('#')[0]))
 	for a in authors:
-		links.append(('author', a[0].split('#')[0]))
+		#links.append(('author', a[0].split('#')[0]))
+		pass
 	links = list(set(links))
 	return links
 
@@ -49,8 +50,6 @@ def get_journals():
 	cnt = 0
 	for file_name in files:
 		save_path = os.path.join(JOURNAL_CRALWED_FOLDER, file_name)
-		if util.exists(save_path):
-			continue
 		data = util.load_json(os.path.join(JOURNAL_FOLDER, file_name))
 		html = util.get_page(data['url'])
 		full_name = get_full_name(html)
@@ -67,8 +66,6 @@ def get_conferences():
 	cnt = 0
 	for file_name in files:
 		save_path = os.path.join(CONFERENCE_CRALWED_FOLDER, file_name)
-		if util.exists(save_path):
-			continue
 		data = util.load_json(os.path.join(CONFERENCE_FOLDER, file_name))
 		html = util.get_page(data['url'])
 		full_name = get_full_name(html)
