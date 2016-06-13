@@ -14,7 +14,9 @@ AUTHOR_CRALWED_FOLDER = os.path.join('link', 'author')
 def get_links(prefix, html):
 	journals = util.find_journals(html)
 	conferences = util.find_conferences(html)
-	authors = util.find_authors(html)
+	journals = list(set(journals))
+	conferences = list(set(conferences))
+	#authors = util.find_authors(html)
 	links = []
 	for j in journals:
 		if j[0].startswith(prefix):
@@ -32,7 +34,7 @@ def get_links(prefix, html):
 			#links += get_links('###', inner)
 		else:
 			links.append(('conference', c[0].split('/')[0].split('#')[0]))
-	for a in authors:
+	#for a in authors:
 		#links.append(('author', a[0].split('#')[0]))
 		pass
 	links = list(set(links))
@@ -65,12 +67,14 @@ def get_conferences():
 	util.mkdir(CONFERENCE_CRALWED_FOLDER)
 	cnt = 0
 	for file_name in files:
+		cnt += 1
+		if cnt < 1970:
+			continue
 		save_path = os.path.join(CONFERENCE_CRALWED_FOLDER, file_name)
 		data = util.load_json(os.path.join(CONFERENCE_FOLDER, file_name))
 		html = util.get_page(data['url'])
 		full_name = get_full_name(html)
 		data['name'] = full_name
-		cnt += 1
 		try:
 			print cnt, len(files), data['short']
 		except:
@@ -96,6 +100,6 @@ def get_authors():
 
 
 if __name__ == '__main__':
-    get_journals()
+    #get_journals()
     get_conferences()
     #get_authors()
