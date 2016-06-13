@@ -56,7 +56,7 @@ def get_journals():
 		full_name = get_full_name(html)
 		data['name'] = full_name
 		cnt += 1
-		print cnt, len(files), data['short'], '|', full_name
+		print cnt, len(files), data['short']
 		data['links'] = get_links(data['short'], html)
 		#util.save_json(save_path, data)
 
@@ -75,7 +75,7 @@ def get_conferences():
 		data['name'] = full_name
 		cnt += 1
 		try:
-			print cnt, len(files), data['short'], '|', full_name
+			print cnt, len(files), data['short']
 		except:
 			pass
 		data['links'] = get_links(data['short'], html)

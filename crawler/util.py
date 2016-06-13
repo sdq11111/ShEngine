@@ -20,7 +20,8 @@ def get_page(url):
     if path.endswith('.html') and os.path.exists(path):
         with open(path) as reader:
             html = reader.read()
-        return html
+            if 'Too Many Requests' not in html:
+                return html
     if not path.endswith('.html'):
         path += '.html'
     if os.path.exists(path):
@@ -36,12 +37,14 @@ def get_page(url):
             time.sleep(retry_int)
             r = requests.get(url, timeout=5)
             html = r.text.replace('\n', '').replace('\r', '')
-            if '?' not in path:
-                with open(path, 'w') as writer:
-                    writer.write(html)
-            return html
+            if 'Too Many Requests' not in html:
+                if '?' not in path:
+                    with open(path, 'w') as writer:
+                        writer.write(html)
+                return html
         except:
-            retry_int += 0.05
+            pass
+        retry_int += 0.05
 
 
 def save_json(path, value):
