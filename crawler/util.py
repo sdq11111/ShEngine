@@ -17,11 +17,15 @@ def get_page(url):
     parts = url.split('://')[1].split('/')
     folder = CRAWLED_FOLDER + '/html/' + '/'.join(parts[:-1])
     path = folder + '/' + parts[-1]
+    if path.endswith('.html') and os.path.exists(path):
+        return ''
     if not path.endswith('.html'):
         path += '.html'
     if os.path.exists(path):
         with open(path) as reader:
-            return reader.read()
+            html = reader.read()
+            if 'Too Many Requests' not in html:
+                return html
     if not os.path.exists(folder):
         os.makedirs(folder)
     retry_int = 0.01

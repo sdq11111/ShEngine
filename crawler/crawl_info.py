@@ -74,7 +74,10 @@ def get_conferences():
 		full_name = get_full_name(html)
 		data['name'] = full_name
 		cnt += 1
-		print cnt, len(files), data['short'], '|', full_name
+		try:
+			print cnt, len(files), data['short'], '|', full_name
+		except:
+			pass
 		data['links'] = get_links(data['short'], html)
 		#util.save_json(save_path, data)
 
