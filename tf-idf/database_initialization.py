@@ -58,3 +58,6 @@ for file_name in files:
         ''' % (util.PAGE_TYPE_JOURNAL, data['short'], data['short']))
     cnt += 1
     print cnt, len(files)
+
+conn.commit()
+conn.close()

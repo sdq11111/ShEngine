@@ -3,3 +3,7 @@
 
 # Downloaded
 crawler/data
+
+# Database
+*.sqlite3
+*.db
