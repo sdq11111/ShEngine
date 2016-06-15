@@ -175,3 +175,44 @@ body {
     padding-left: 20px;
     padding-right: 20px;
 }
+
+.pub {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.pub_title {
+    font-size: 16px;
+}
+
+.pub_url a {
+    font-size: 14px;
+    color: rgb(34, 177, 76);
+}
+
+.pub_author {
+    font-size: 14px;
+    color: rgb(255, 201, 14);
+    margin-right: 6px;
+}
+
+.pub_author a {
+    font-size: 14px;
+    color: rgb(255, 201, 14);
+    margin-right: 0;
+}
+
+.pub_source a {
+    color: #ccc;
+}
+
+.pages {
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+.pages a {
+    font-size: 18px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
