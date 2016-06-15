@@ -7,5 +7,5 @@ crawler/data
 # Database
 *.sqlite3
 *.db
-mongo/*.log
+mongo/*.log*
 mongo/data
