@@ -29,6 +29,7 @@ def search(request):
 
     client = MongoClient()
     db = client['sh-engine']
+    #db.drop_collection('query')
     db_pubs = db['sh-engine']
     db_words = db['words']
     db_query = db['query']
@@ -48,7 +49,9 @@ def search(request):
                     scores[pub] += idf
         score_list = []
         for key, val in scores.items():
-            score_list.append((val, key))
+            pub = db_pubs.find_one({'_id': key})
+            word_count = len(split_to_words(pub['title']))
+            score_list.append((val / word_count, key))
         score_list.sort(reverse=True)
         pubs = map(lambda x: x[1], score_list)
         db_query.insert_one({'query': query, 'result': pubs})
@@ -57,8 +60,6 @@ def search(request):
     result = result['result'][page*20:][:20]
     for i in xrange(len(result)):
         result[i] = db_pubs.find_one({'_id': result[i]})
-        #if '<i>' in result[i]['title']:
-        #    result[i]['title'] = re.findall('<i>(.*?)</i>', result[i]['title'])[0]
 
     next_page = page + 2
     return render(request, 'result.html', locals())
