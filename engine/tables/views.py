@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from . import util
+#from . import util
 
 
 def init(request):
@@ -97,24 +97,32 @@ def words(request):
     client = MongoClient()
     db = client['sh-engine']
     engine = db['sh-engine']
-    db.drop_collection('words')
+    #db.drop_collection('words')
     db_words = db['words']
     db_words.create_index([('word', pymongo.ASCENDING)], unique=True)
     word_dict = {}
     cnt = 0
-    for pub in engine.find():
-        pub_id = pub['_id']
-        title = pub['title']
-        words = split_to_words(title)
-        for word in words:
-            last = db_words.find_one({'word': word})
-            if last is None:
-                db_words.insert_one({'word': word, 'pubs': [pub_id]})
-            else:
-                pubs = last['pubs'] + [pub_id]
-                db_words.update_one({'word': word}, {"$set": {'pubs': pubs}})
-        cnt += 1
-        print cnt, db_words.count()
+    cnt = 0
+    for i in xrange(0, engine.count() // 100 * 100 + 100, 100):
+        pub_data = []
+        for pub in engine.find(skip=i, limit=100):
+            pub_data.append(pub)
+        for pub in pub_data:
+            if cnt < 50173:
+                cnt += 1
+                continue
+            pub_id = pub['_id']
+            title = pub['title']
+            words = split_to_words(title)
+            for word in words:
+                last = db_words.find_one({'word': word})
+                if last is None:
+                    db_words.insert_one({'word': word, 'pubs': [pub_id]})
+                else:
+                    pubs = last['pubs'] + [pub_id]
+                    db_words.update_one({'word': word}, {"$set": {'pubs': pubs}})
+            cnt += 1
+            print cnt, db_words.count()
     cnt = 0
     for word_data in db_words.find():
         word = word_data['word']
@@ -123,3 +131,7 @@ def words(request):
         cnt += 1
         print cnt, db_words.count(), word, len(pubs)
     return HttpResponse("")
+
+if __name__ == "__main__":
+    words(None)
+
