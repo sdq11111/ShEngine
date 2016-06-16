@@ -97,34 +97,37 @@ def words(request):
     client = MongoClient()
     db = client['sh-engine']
     engine = db['sh-engine']
-    #db.drop_collection('words')
+    db.drop_collection('words')
     db_words = db['words']
     db_words.create_index([('word', pymongo.ASCENDING)], unique=True)
     word_dict = {}
     cnt = 0
-    cnt = 0
-    for i in xrange(0, engine.count() // 100 * 100 + 100, 100):
+    seg = 5000
+    for i in xrange(0, engine.count() // seg * seg + seg, seg):
         pub_data = []
-        for pub in engine.find(skip=i, limit=100):
+        for pub in engine.find(skip=i, limit=seg):
             pub_data.append(pub)
+        temp_dict = {}
         for pub in pub_data:
-            if cnt < 244246:
-                cnt += 1
-                continue
+            #if cnt < 306000:
+            #    cnt += 1
+            #    continue
             pub_id = pub['_id']
             title = pub['title']
-            words = list(set(split_to_words(title)))
+            words = set(split_to_words(title))
             for word in words:
-                db_words.update_one({'word': word}, {"$push": {'pubs': pub_id}})
+                if word not in temp_dict.keys():
+                    temp_dict[word] = []
+                temp_dict[word].append(pub_id)
             cnt += 1
-            print cnt, db_words.count()
-    cnt = 0
-    for word_data in db_words.find():
-        word = word_data['word']
-        pubs = list(set(word_data['pubs']))
-        db_words.update_one({'word': word}, {"$set": {'pubs': pubs}})
-        cnt += 1
-        print cnt, db_words.count(), word, len(pubs)
+            if cnt % 10 == 0:
+                print cnt, len(temp_dict), db_words.count()
+        for word, pubs in temp_dict.items():
+            temp = db_words.find_one({'word': word})
+            if temp is None:
+                db_words.insert_one({'word': word, 'pubs': pubs})
+            else:
+                db_words.update_one({'word': word}, {"$pushAll": {'pubs': pubs}})
     return HttpResponse("")
 
 if __name__ == "__main__":
