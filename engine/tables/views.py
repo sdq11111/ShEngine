@@ -108,19 +108,14 @@ def words(request):
         for pub in engine.find(skip=i, limit=100):
             pub_data.append(pub)
         for pub in pub_data:
-            if cnt < 50173:
+            if cnt < 244246:
                 cnt += 1
                 continue
             pub_id = pub['_id']
             title = pub['title']
-            words = split_to_words(title)
+            words = list(set(split_to_words(title)))
             for word in words:
-                last = db_words.find_one({'word': word})
-                if last is None:
-                    db_words.insert_one({'word': word, 'pubs': [pub_id]})
-                else:
-                    pubs = last['pubs'] + [pub_id]
-                    db_words.update_one({'word': word}, {"$set": {'pubs': pubs}})
+                db_words.update_one({'word': word}, {"$push": {'pubs': pub_id}})
             cnt += 1
             print cnt, db_words.count()
     cnt = 0
