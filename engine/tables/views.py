@@ -97,21 +97,21 @@ def words(request):
     client = MongoClient()
     db = client['sh-engine']
     engine = db['sh-engine']
-    db.drop_collection('words')
+    #db.drop_collection('words')
     db_words = db['words']
     db_words.create_index([('word', pymongo.ASCENDING)], unique=True)
     word_dict = {}
     cnt = 0
-    seg = 5000
+    seg = 10000
     for i in xrange(0, engine.count() // seg * seg + seg, seg):
         pub_data = []
         for pub in engine.find(skip=i, limit=seg):
             pub_data.append(pub)
         temp_dict = {}
         for pub in pub_data:
-            #if cnt < 306000:
-            #    cnt += 1
-            #    continue
+            if cnt < 2390000:
+                cnt += 1
+                continue
             pub_id = pub['_id']
             title = pub['title']
             words = set(split_to_words(title))
@@ -127,7 +127,10 @@ def words(request):
             if temp is None:
                 db_words.insert_one({'word': word, 'pubs': pubs})
             else:
-                db_words.update_one({'word': word}, {"$pushAll": {'pubs': pubs}})
+                try:
+                    db_words.update_one({'word': word}, {"$pushAll": {'pubs': pubs}})
+                except:
+                    pass
     return HttpResponse("")
 
 if __name__ == "__main__":

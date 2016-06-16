@@ -47,11 +47,17 @@ def search(request):
                     if pub not in scores.keys():
                         scores[pub] = 0.0
                     scores[pub] += idf
+
         score_list = []
         for key, val in scores.items():
-            pub = db_pubs.find_one({'_id': key})
+            score_list.append((val, key))
+        score_list.sort(reverse=True)
+        if len(score_list) > 3000:
+            score_list = score_list[:3000]
+        for i in xrange(len(score_list)):
+            pub = db_pubs.find_one({'_id': score_list[i][1]})
             word_count = len(split_to_words(pub['title']))
-            score_list.append((val / word_count, key))
+            score_list[i] = (score_list[i][0] / word_count, score_list[i][1])
         score_list.sort(reverse=True)
         pubs = map(lambda x: x[1], score_list)
         db_query.insert_one({'query': query, 'result': pubs})
