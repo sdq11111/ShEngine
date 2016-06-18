@@ -1,5 +1,7 @@
 import os
+import math
 import json
+import random
 from HTMLParser import HTMLParser
 import pymongo
 from pymongo import MongoClient
@@ -116,7 +118,7 @@ def words(request):
             title = pub['title']
             words = set(split_to_words(title))
             for word in words:
-                if word not in temp_dict.keys():
+                if word not in temp_dict:
                     temp_dict[word] = []
                 temp_dict[word].append(pub_id)
             cnt += 1
@@ -133,6 +135,31 @@ def words(request):
                     pass
     return HttpResponse("")
 
+
+def shrink():
+    client = MongoClient()
+    db = client['sh-engine']
+    db.drop_collection('shrink')
+    engine = db['sh-engine']
+    db_words = db['words']
+    db_shrink = db['shrink']
+    seg = 10000
+    total_num = engine.count()
+    cnt = 0
+    for i in xrange(0, db_words.count() // seg * seg + seg, seg):
+        for word_data in db_words.find(skip=i, limit=seg):
+            word = word_data['word']
+            pubs = word_data['pubs']
+            if len(pubs) >= 100000:
+                pubs = []
+            elif len(pubs) > 5000:
+                pubs = random.sample(pubs, 5000)
+            idf = math.log(1.0 * total_num / (len(pubs) + 1))
+            db_shrink.insert_one({'word': word, 'pubs': pubs, 'idf': idf})
+            cnt += 1
+            print cnt, db_words.count(), word
+
+
 if __name__ == "__main__":
-    words(None)
+    shrink()
 
