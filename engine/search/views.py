@@ -34,10 +34,10 @@ def search(request):
     client = MongoClient()
     db = client['sh-engine']
 
-    db.drop_collection('query')
+    #db.drop_collection('query')
 
     db_pubs = db['sh-engine']
-    db_words = db['shrink']
+    db_words = db['words']
     db_query = db['query']
 
     result = db_query.find_one({'query': query})
@@ -48,7 +48,10 @@ def search(request):
         for word in words:
             indice = db_words.find_one({'word': word})
             if indice is not None:
-                idf = indice['idf']
+                print word, len(indice['pubs'])
+                if len(indice['pubs']) > 100000:
+                    continue
+                idf = math.log(1.0 * total_num / len(indice['pubs']))
                 for pub in indice['pubs']:
                     if pub not in scores:
                         scores[pub] = 0.0
